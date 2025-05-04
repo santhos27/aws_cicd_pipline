@@ -1,0 +1,23 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t flask-app .
+      - docker tag flask-app:latest $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/flask-app:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/flask-app:latest
+      - echo Deploying to EKS...
+      - kubectl apply -f eks-deployment/deployment.yaml
+      - kubectl apply -f eks-deployment/service.yaml
+
+artifacts:
+  files:
+    - eks-deployment/*.yaml
