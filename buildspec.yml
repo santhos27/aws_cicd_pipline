@@ -16,10 +16,4 @@ phases:
     commands:
       - echo Pushing the Docker image...
       - docker push 140023408041.dkr.ecr.ap-south-1.amazonaws.com/flask-app:latest
-      - echo Deploying to EKS...
-      - kubectl apply -f eks-deployment/deployment.yaml
-      - kubectl apply -f eks-deployment/service.yaml
 
-artifacts:
-  files:
-    - eks-deployment/*.yaml
